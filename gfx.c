@@ -12,12 +12,13 @@
 /// @param height Height of the window in pixels.
 /// @return a pointer to the graphic context or NULL if it failed.
 gfx_context_t* gfx_create(char *title, int width, int height) {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) goto error;
-	SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        fprintf(stderr, "%s", SDL_GetError());
+        goto error;
+    }
+	SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
-	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-			SDL_TEXTUREACCESS_STREAMING, width, height);
+	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 	uint32_t *pixels = malloc(width*height*sizeof(uint32_t));
 	gfx_context_t *ctxt = malloc(sizeof(gfx_context_t));
 

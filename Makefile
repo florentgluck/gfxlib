@@ -1,5 +1,9 @@
-CC=gcc -std=c11 -Wall -Wextra -fsanitize=address -fsanitize=leak -fsanitize=undefined -g
+#SAN=-fsanitize=address -fsanitize=leak -fsanitize=undefined
+SAN=
+CC=gcc -std=c11 -Wall -Wextra $(SAN) -g
 LIBS=-lSDL2
+
+all: gfx_example list_drivers
 
 gfx_example: gfx_example.o gfx.o
 	$(CC) $^ -o $@ $(LIBS)
@@ -10,8 +14,12 @@ gfx_example.o: gfx_example.c gfx.h
 gfx.o: gfx.c gfx.h
 	$(CC) $< -c
 
-run: gfx_example
-	./$<
+list_drivers: list_drivers.c
+	$(CC) $^ -o $@ $(LIBS)
+
+run: gfx_example list_drivers
+	./list_drivers
+	./gfx_example
 
 clean:
-	rm -f *.o gfx_example
+	rm -f *.o gfx_example list_drivers
