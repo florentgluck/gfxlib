@@ -19,12 +19,12 @@
 #define GFX_YELLOW 0x00FFFF00
 
 typedef struct {
-	SDL_Window *window;
-	SDL_Renderer *renderer;
-	SDL_Texture *texture;
-	uint32_t *pixels;
-	int width;
-	int height;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture;
+    uint32_t *pixels;
+    int width;
+    int height;
 } gfx_context_t;
 
 extern void gfx_putpixel(gfx_context_t *ctxt, int x, int y, uint32_t color);
