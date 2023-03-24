@@ -1,6 +1,6 @@
 #SAN=-fsanitize=address -fsanitize=leak -fsanitize=undefined
 SAN=
-CC=gcc -std=c11 -Wall -Wextra $(SAN) -g
+CC=gcc -std=gnu11 -Wall -Wextra $(SAN) -g
 LIBS=-lSDL2
 
 all: gfx_example list_drivers

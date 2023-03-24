@@ -5,6 +5,7 @@
 /// Requires the SDL2 library.
 
 #include "gfx.h"
+#include <signal.h>
 
 /// Create a fullscreen graphic window.
 /// @param title Title of the window.
@@ -16,7 +17,24 @@ gfx_context_t* gfx_create(char *title, int width, int height) {
         fprintf(stderr, "%s", SDL_GetError());
         goto error;
     }
-    SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
+    // Restore SIGINT's default behavior so that we can use CTRL-C to stop the program
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = SIG_DFL;
+	if (sigaction(SIGINT, &act, NULL) < 0) {
+		perror("sigaction");
+		exit(1);
+	}
+
+    // These a just for reference:
+    // SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+    // SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");  // opengl, opengles2, software
+    // SDL_SetHint(SDL_HINT_RENDER_OPENGL_SHADERS, "0");
+    // SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
+    // SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_PING, "0");
+    // SDL_SetHint(SDL_HINT_VIDEO_X11_XVIDMODE, "0");
+
+    SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     uint32_t *pixels = malloc(width*height*sizeof(uint32_t));
