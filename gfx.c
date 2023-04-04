@@ -34,7 +34,7 @@ gfx_context_t* gfx_create(char *title, int width, int height) {
     // SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_PING, "0");
     // SDL_SetHint(SDL_HINT_VIDEO_X11_XVIDMODE, "0");
 
-    SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+    SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL/*|SDL_WINDOW_RESIZABLE*/);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     uint32_t *pixels = malloc(width*height*sizeof(uint32_t));
