@@ -1,6 +1,6 @@
 /// @file gfx.c
 /// @author Florent Gluck
-/// @date 2016-2020
+/// @date 2016-2023
 /// Helper routines to render pixels in fullscreen graphic mode.
 /// Requires the SDL2 library.
 
