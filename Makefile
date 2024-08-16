@@ -1,31 +1,30 @@
 #SAN=-fsanitize=address -fsanitize=leak -fsanitize=undefined
 SAN=
-CC=gcc -std=gnu11 -Wall -Wextra -MMD $(SAN) -g
-LIBS=-lSDL2
+CC=gcc -std=gnu17 -Wall -Wextra -MMD $(SAN) -g
+LIBS=-lSDL2 -lSDL2_image
 
-C_SRCS=$(wildcard *.c)
-C_OBJS=$(C_SRCS:.c=.o)
-C_DEPS=$(C_OBJS:%.o=%.d)
-C_OBJ_COMMON=gfx.o
+SRCS=$(wildcard examples/*.c)
+OBJS=$(SRCS:.c=.o)
+DEPS=$(SRCS:.c=.d)
+BINS=$(SRCS:.c=.bin)
 
-BIN=gfx_example mouse_example list_drivers_example
+OBJS+=gfx.o
+DEPS+=gfx.d
 
-all: $(BIN)
+all: $(BINS)
 
-gfx_example: $(C_OBJ_COMMON) gfx_example.o
-	@echo pipo
-	$(CC) $^ -o $@ $(LIBS)
+run: $(BINS)
+	@for bin in $(BINS); do \
+		$$bin ;\
+	done\
 
-mouse_example: $(C_OBJ_COMMON) mouse_example.o
-	$(CC) $^ -o $@ $(LIBS)
-
-list_drivers_example: list_drivers_example.o
+%.bin: %.o gfx.o
 	$(CC) $^ -o $@ $(LIBS)
 
 %.o: %.c
 	$(CC) -c $< -o $@
 
 clean:
-	rm -f *.o *.d $(BIN)
+	/bin/rm -f $(OBJS) $(DEPS) $(BINS)
 
--include $(C_DEPS)
+-include $(DEPS)

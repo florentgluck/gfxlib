@@ -1,9 +1,7 @@
 # gfxlib
 
-A super simple wrapper for the SDL2 C library.
+A super simple wrapper for the SDL2 C library with a few examples on how to use it.
 
-On a Ubuntu/Debian system, you'll need the following package to develop with the SDL2 library: `libsdl2-dev`.
-The executable needs to be linked to the SDL2 library (flag `-lSDL2` when using gcc or clang).
+On a Ubuntu/Debian system, you'll need the following packages to compile and run these SDL2 examples: `libsdl2-dev` and `libsdl2-image-dev`.
 
-Type `make` to build the example and `make run` to run it.
-
+Type `make run` to build and run the examples located in the `examples` directory. Running `make clean` cleans up all generated files.

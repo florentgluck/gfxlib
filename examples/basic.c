@@ -1,20 +1,20 @@
 #include <stdlib.h>
 #include <signal.h>
-#include "gfx.h"
+#include "../gfx.h"
 
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
+#define DISPLAY_WIDTH  1280
+#define DISPLAY_HEIGHT 720
 
 /// Render some white noise.
 /// @param context graphical context to use.
 static void render(gfx_context_t *context) {
-    gfx_clear(context, GFX_BLACK);
+    gfx_clear(context, GFX_COL_BLACK);
 
-    for (int i = 0; i < SCREEN_WIDTH*SCREEN_HEIGHT/10; i++) {
+    for (int i = 0; i < DISPLAY_WIDTH*DISPLAY_HEIGHT/10; i++) {
         int x = rand() % context->width;
         int y = rand() % context->height;
         uint32_t intensity = rand() % 256;  // 8-bit per color channel
-        uint32_t color = GFX_COLOR(intensity,intensity,intensity);
+        pixel_t color = (pixel_t){intensity,intensity,intensity,0};
         gfx_putpixel(context, x, y, color);
     }
 }
@@ -22,7 +22,7 @@ static void render(gfx_context_t *context) {
 /// Program entry point.
 /// @return the application status code (0 if success).
 int main() {
-    gfx_context_t *ctxt = gfx_create("Example", SCREEN_WIDTH, SCREEN_HEIGHT);
+    gfx_context_t *ctxt = gfx_create("Basic Example", DISPLAY_WIDTH, DISPLAY_HEIGHT);
     if (!ctxt) {
         fprintf(stderr, "Graphics initialization failed!\n");
         return EXIT_FAILURE;
@@ -30,6 +30,7 @@ int main() {
 
     while (gfx_keypressed() != SDLK_ESCAPE) {
         render(ctxt);
+        gfx_copy_pixels(ctxt);
         gfx_present(ctxt);
     }
 
