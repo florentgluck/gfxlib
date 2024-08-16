@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #define GFX_COL_BLACK  (pixel_t){0,0,0,0}
 #define GFX_COL_RED    (pixel_t){0,0,255,0}

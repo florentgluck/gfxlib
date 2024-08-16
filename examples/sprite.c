@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "../gfx.h"
-#include <SDL2/SDL_image.h>
 
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 360
