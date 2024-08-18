@@ -33,7 +33,7 @@ static void render_plasma(gfx_context_t *context) {
         for (i = 0; i < 256; i++) {
             j = sintab[(i+64) & 255] >> 2;
             k = sintab[i] >> 2;
-            palette[i] = (pixel_t){30*4,k*4,j*4,0};
+            palette[i] = GFX_RGB(j*4,k*4,30*4);
         }
     }
 
@@ -58,18 +58,6 @@ static void render_plasma(gfx_context_t *context) {
     if ((++delay_cnt % delay) == 0) { u--; v++; }
 }
 
-/// Render a sprite.
-/// @param context Graphical context to use.
-/// @param sprite Texture holding the sprite data.
-/// @param x X coordinate.
-/// @param y Y coordinate.
-static void render_sprite(gfx_context_t *context, SDL_Texture *sprite, int x, int y) {
-    const int sprite_width = 128;
-    const int sprite_height = 128;
-    SDL_Rect dst_rect = { x, y, sprite_width, sprite_height };
-    SDL_RenderCopy(context->renderer, sprite, NULL, &dst_rect);
-}
-
 /// Program entry point.
 /// @return the application status code (0 if success).
 int main() {
@@ -79,18 +67,11 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    SDL_Surface *sprite_surface = IMG_Load("examples/tux_jedi.png");
-    if (!sprite_surface) {
-        fprintf(stderr, "IMG_Load failed!\n");
-        return EXIT_FAILURE;
-    }
-
-    SDL_Texture *sprite_tex = SDL_CreateTextureFromSurface(ctxt->renderer, sprite_surface);
+    SDL_Texture *sprite_tex = gfx_loadsprite(ctxt, "examples/tux_jedi.png");
     if (!sprite_tex) {
-        fprintf(stderr, "SDL_CreateTextureFromSurface failed");
+        fprintf(stderr, "Failed loading sprite!\n");
         return EXIT_FAILURE;
     }
-    SDL_FreeSurface(sprite_surface);  // Only the texture is needed
 
     bool quit = false;
     int x = 50, y = 50, speed = 4;
@@ -98,7 +79,7 @@ int main() {
     while (!quit) {
         render_plasma(ctxt);
         gfx_copy_pixels(ctxt);
-        render_sprite(ctxt, sprite_tex, x, y);
+        gfx_rendersprite(ctxt, sprite_tex, x, y, 128, 128);
         gfx_present(ctxt);
 
         SDL_Keycode key = gfx_keypressed();

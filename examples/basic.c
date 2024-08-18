@@ -14,7 +14,7 @@ static void render(gfx_context_t *context) {
         int x = rand() % context->width;
         int y = rand() % context->height;
         uint32_t intensity = rand() % 256;  // 8-bit per color channel
-        pixel_t color = (pixel_t){intensity,intensity,intensity,0};
+        pixel_t color = GFX_RGB(intensity,intensity,intensity);
         gfx_putpixel(context, x, y, color);
     }
 }

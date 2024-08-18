@@ -23,11 +23,11 @@ static void render(gfx_context_t *context) {
 
     // Left button: draw a "cross" at mouse position
     if (button & 1) {
-        gfx_putpixel(context, x,   y, (pixel_t){255,255,0,0});
-        gfx_putpixel(context, x-1, y, (pixel_t){200,200,0,0});
-        gfx_putpixel(context, x+1, y, (pixel_t){200,200,0,0});
-        gfx_putpixel(context, x, y-1, (pixel_t){200,200,0,0});
-        gfx_putpixel(context, x, y+1, (pixel_t){200,200,0,0});
+        gfx_putpixel(context, x,   y, GFX_RGB(200,100,255));
+        gfx_putpixel(context, x-1, y, GFX_RGB(100,50,255));
+        gfx_putpixel(context, x+1, y, GFX_RGB(100,50,255));
+        gfx_putpixel(context, x, y-1, GFX_RGB(100,50,255));
+        gfx_putpixel(context, x, y+1, GFX_RGB(100,50,255));
     }
     // Right button: clear screen
     else if (button & 4) {

@@ -57,8 +57,8 @@ error:
     return NULL;
 }
 
-/// Draw a pixel in the specified graphic context.
-/// @param ctxt Graphic context where the pixel is to be drawn.
+/// Draw a pixel into the pixels buffer.
+/// @param ctxt Graphic context.
 /// @param x X coordinate of the pixel.
 /// @param y Y coordinate of the pixel.
 /// @param color Color of the pixel.
@@ -68,8 +68,8 @@ void gfx_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color) {
     }
 }
 
-/// Clear the specified graphic context.
-/// @param ctxt Graphic context to clear.
+/// Clear the pixels buffer.
+/// @param ctxt Graphic context.
 /// @param color Color to use.
 void gfx_clear(gfx_context_t *ctxt, pixel_t color) {
     int n = ctxt->width*ctxt->height;
@@ -78,19 +78,21 @@ void gfx_clear(gfx_context_t *ctxt, pixel_t color) {
     }
 }
 
+/// Copy the pixels buffer to the display buffer.
+/// @param ctxt Graphic context.
 void gfx_copy_pixels(gfx_context_t *ctxt) {
     SDL_UpdateTexture(ctxt->pixels_texture, NULL, ctxt->pixels, ctxt->width*sizeof(pixel_t));
     SDL_RenderCopy(ctxt->renderer, ctxt->pixels_texture, NULL, NULL);
 }
 
-/// Display the graphic context.
-/// @param ctxt Graphic context to clear.
+/// Show the display buffer.
+/// @param ctxt Graphic context.
 void gfx_present(gfx_context_t *ctxt) {
     SDL_RenderPresent(ctxt->renderer);
 }
 
 /// Destroy a graphic window.
-/// @param ctxt Graphic context of the window to close.
+/// @param ctxt Graphic context.
 void gfx_destroy(gfx_context_t *ctxt) {
     SDL_ShowCursor(SDL_ENABLE);
     SDL_DestroyTexture(ctxt->pixels_texture);
@@ -105,7 +107,8 @@ void gfx_destroy(gfx_context_t *ctxt) {
     free(ctxt);
 }
 
-/// If a key was pressed, returns its key code (non blocking call).
+/// If a key was pressed, returns its key code.
+/// IMPORTANT: This is a non-blocking call!
 /// List of key codes: https://wiki.libsdl.org/SDL_Keycode
 /// @return the key that was pressed or 0 if none was pressed.
 SDL_Keycode gfx_keypressed() {
@@ -117,3 +120,34 @@ SDL_Keycode gfx_keypressed() {
     return 0;
 }
 
+/// Load a sprite from an image file (png, jpg, etc.).
+/// @param ctxt Graphic context.
+/// @param filename path to the file to load.
+/// @return a pointer to the sprite or NULL in case of failure.
+SDL_Texture *gfx_loadsprite(gfx_context_t *ctxt, char *filename) {
+    SDL_Surface *sprite_surface = IMG_Load(filename);
+    // Failed loading sprite.
+    if (!sprite_surface) {
+        return NULL;
+    }
+
+    SDL_Texture *sprite_texture = SDL_CreateTextureFromSurface(ctxt->renderer, sprite_surface);
+    if (!sprite_texture) {
+        return NULL;
+    }
+    SDL_FreeSurface(sprite_surface);  // Only the texture is needed
+
+    return sprite_texture;
+}
+
+/// Render a sprite.
+/// @param context Graphical context to use.
+/// @param sprite Texture holding the sprite data.
+/// @param x X coordinate.
+/// @param y Y coordinate.
+/// @param sprite_width sprite's width.
+/// @param sprite_height sprite's height.
+void gfx_rendersprite(gfx_context_t *ctxt, SDL_Texture *sprite, int x, int y, int sprite_width, int sprite_height) {
+    SDL_Rect dst_rect = { x, y, sprite_width, sprite_height };
+    SDL_RenderCopy(ctxt->renderer, sprite, NULL, &dst_rect);
+}
