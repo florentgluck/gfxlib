@@ -17,7 +17,7 @@
 #define GFX_COL_YELLOW GFX_RGB(0,255,255)
 #define GFX_COL_WHITE  GFX_RGB(255,255,255)
 
-// Structure of a pixel: 32-bits (BGRA)
+// Structure of a pixel: 32-bits (ARGB)
 typedef struct __attribute__ ((__packed__)) {
     uint8_t b;
     uint8_t g;
