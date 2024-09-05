@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "../gfx.h"
+#include "tux_cow.h"
 
 #define DISPLAY_WIDTH  640
 #define DISPLAY_HEIGHT 360
@@ -15,7 +16,7 @@ static void render_plasma(gfx_context_t *context) {
     static int u = 0, v = 0;
     static bool first_run = true;
 
-    int sintab[256] = {
+    static int sintab[256] = {
         127,130,133,136,139,143,146,149,152,155,158,161,164,167,170,173,176,179,182,184,187,190,193,
         195,198,200,203,205,208,210,213,215,217,219,221,224,226,228,229,231,233,235,236,238,239,241,
         242,244,245,246,247,248,249,250,251,251,252,253,253,254,254,254,254,254,255,254,254,254,254,
@@ -67,19 +68,29 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    SDL_Texture *sprite = gfx_sprite_create(ctxt, "examples/tux_jedi.png");
-    if (!sprite) {
-        fprintf(stderr, "Failed loading sprite!\n");
+    char *filename = "examples/tux_jedi.png";
+    SDL_Texture *sprite1 = gfx_sprite_load(ctxt, filename);
+    if (!sprite1) {
+        fprintf(stderr, "Failed loading sprite \"%s\"!\n", filename);
+        return EXIT_FAILURE;
+    }
+
+    // extern uint8_t tux_cow[65536];
+    SDL_Texture *sprite2 = gfx_sprite_create(ctxt, tux_cow, 128, 128);
+    // SDL_Texture *sprite2 = gfx_sprite_create(ctxt, sprite_test, 128, 128);
+    if (!sprite2) {
+        fprintf(stderr, "Failed creating sprite!\n");
         return EXIT_FAILURE;
     }
 
     bool quit = false;
-    int x = 50, y = 50, speed = 4;
+    int x = 400, y = 100, speed = 4;
 
     while (!quit) {
         render_plasma(ctxt);
         gfx_background_update(ctxt);
-        gfx_sprite_render(ctxt, sprite, x, y, 128, 128);
+        gfx_sprite_render(ctxt, sprite1, x, y, 128, 128);
+        gfx_sprite_render(ctxt, sprite2, 30, 40, 256, 256);
         gfx_present(ctxt);
 
         SDL_Keycode key = gfx_keypressed();
@@ -102,7 +113,8 @@ int main() {
         }
     }
 
-    gfx_sprite_destroy(sprite);
+    gfx_sprite_destroy(sprite1);
+    gfx_sprite_destroy(sprite2);
 
     gfx_destroy(ctxt);
     return EXIT_SUCCESS;

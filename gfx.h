@@ -41,7 +41,8 @@ void gfx_background_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color);
 void gfx_background_clear(gfx_context_t *ctxt, pixel_t color);
 void gfx_background_update(gfx_context_t *ctxt);
 
-SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, char *filename);
+SDL_Texture *gfx_sprite_load(gfx_context_t *ctxt, char *filename);
+SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, int height);
 void gfx_sprite_destroy(SDL_Texture *sprite);
 void gfx_sprite_render(gfx_context_t *ctxt, SDL_Texture *sprite, int x, int y, int sprite_width, int sprite_height);
 
