@@ -36,53 +36,53 @@ gfx_context_t* gfx_create(char *title, int width, int height) {
 
     SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Texture *pixels_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-    pixel_t *pixels = malloc(width*height*sizeof(pixel_t));
+    SDL_Texture *background_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+    pixel_t *background = malloc(width*height*sizeof(pixel_t));
     gfx_context_t *ctxt = malloc(sizeof(gfx_context_t));
 
-    if (!window || !renderer || !pixels_texture || !pixels || !ctxt) goto error;
+    if (!window || !renderer || !background_texture || !background || !ctxt) goto error;
 
     ctxt->renderer = renderer;
-    ctxt->pixels_texture = pixels_texture;
+    ctxt->background_texture = background_texture;
     ctxt->window = window;
     ctxt->width = width;
     ctxt->height = height;
-    ctxt->pixels = pixels;
+    ctxt->background = background;
 
     SDL_ShowCursor(SDL_DISABLE);
-    gfx_clear(ctxt, GFX_COL_BLACK);
+    gfx_background_clear(ctxt, GFX_COL_BLACK);
     return ctxt;
 
 error:
     return NULL;
 }
 
-/// Draw a pixel into the pixels buffer.
+/// Draw a pixel in the background buffer.
 /// @param ctxt Graphic context.
 /// @param x X coordinate of the pixel.
 /// @param y Y coordinate of the pixel.
 /// @param color Color of the pixel.
-void gfx_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color) {
+void gfx_background_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color) {
     if (x < ctxt->width && y < ctxt->height) {
-        ctxt->pixels[ctxt->width*y+x] = color;
+        ctxt->background[ctxt->width*y+x] = color;
     }
 }
 
-/// Clear the pixels buffer.
+/// Clear the background buffer.
 /// @param ctxt Graphic context.
 /// @param color Color to use.
-void gfx_clear(gfx_context_t *ctxt, pixel_t color) {
+void gfx_background_clear(gfx_context_t *ctxt, pixel_t color) {
     int n = ctxt->width*ctxt->height;
     while (n) {
-        ctxt->pixels[--n] = color;
+        ctxt->background[--n] = color;
     }
 }
 
-/// Copy the pixels buffer to the display buffer.
+/// Copy the background buffer to the display buffer.
 /// @param ctxt Graphic context.
-void gfx_copy_pixels(gfx_context_t *ctxt) {
-    SDL_UpdateTexture(ctxt->pixels_texture, NULL, ctxt->pixels, ctxt->width*sizeof(pixel_t));
-    SDL_RenderCopy(ctxt->renderer, ctxt->pixels_texture, NULL, NULL);
+void gfx_background_update(gfx_context_t *ctxt) {
+    SDL_UpdateTexture(ctxt->background_texture, NULL, ctxt->background, ctxt->width*sizeof(pixel_t));
+    SDL_RenderCopy(ctxt->renderer, ctxt->background_texture, NULL, NULL);
 }
 
 /// Show the display buffer.
@@ -95,14 +95,14 @@ void gfx_present(gfx_context_t *ctxt) {
 /// @param ctxt Graphic context.
 void gfx_destroy(gfx_context_t *ctxt) {
     SDL_ShowCursor(SDL_ENABLE);
-    SDL_DestroyTexture(ctxt->pixels_texture);
+    SDL_DestroyTexture(ctxt->background_texture);
     SDL_DestroyRenderer(ctxt->renderer);
     SDL_DestroyWindow(ctxt->window);
-    free(ctxt->pixels);
-    ctxt->pixels_texture = NULL;
+    free(ctxt->background);
+    ctxt->background_texture = NULL;
     ctxt->renderer = NULL;
     ctxt->window = NULL;
-    ctxt->pixels = NULL;
+    ctxt->background = NULL;
     SDL_Quit();
     free(ctxt);
 }
@@ -124,7 +124,7 @@ SDL_Keycode gfx_keypressed() {
 /// @param ctxt Graphic context.
 /// @param filename path to the file to load.
 /// @return a pointer to the sprite or NULL in case of failure.
-SDL_Texture *gfx_loadsprite(gfx_context_t *ctxt, char *filename) {
+SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, char *filename) {
     SDL_Surface *sprite_surface = IMG_Load(filename);
     // Failed loading sprite.
     if (!sprite_surface) {
@@ -140,6 +140,10 @@ SDL_Texture *gfx_loadsprite(gfx_context_t *ctxt, char *filename) {
     return sprite_texture;
 }
 
+void gfx_sprite_destroy(SDL_Texture *sprite) {
+    SDL_DestroyTexture(sprite);
+}
+
 /// Render a sprite.
 /// @param context Graphical context to use.
 /// @param sprite Texture holding the sprite data.
@@ -147,7 +151,7 @@ SDL_Texture *gfx_loadsprite(gfx_context_t *ctxt, char *filename) {
 /// @param y Y coordinate.
 /// @param sprite_width sprite's width.
 /// @param sprite_height sprite's height.
-void gfx_rendersprite(gfx_context_t *ctxt, SDL_Texture *sprite, int x, int y, int sprite_width, int sprite_height) {
+void gfx_sprite_render(gfx_context_t *ctxt, SDL_Texture *sprite, int x, int y, int sprite_width, int sprite_height) {
     SDL_Rect dst_rect = { x, y, sprite_width, sprite_height };
     SDL_RenderCopy(ctxt->renderer, sprite, NULL, &dst_rect);
 }

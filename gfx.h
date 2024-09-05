@@ -28,20 +28,25 @@ typedef struct __attribute__ ((__packed__)) {
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
-    SDL_Texture *pixels_texture;
-    pixel_t *pixels;
+    SDL_Texture *background_texture;
+    pixel_t *background;
     int width;
     int height;
 } gfx_context_t;
 
 gfx_context_t* gfx_create(char *text, int width, int height);
 void gfx_destroy(gfx_context_t *ctxt);
-void gfx_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color);
-void gfx_clear(gfx_context_t *ctxt, pixel_t color);
-void gfx_copy_pixels(gfx_context_t *ctxt);
+
+void gfx_background_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color);
+void gfx_background_clear(gfx_context_t *ctxt, pixel_t color);
+void gfx_background_update(gfx_context_t *ctxt);
+
+SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, char *filename);
+void gfx_sprite_destroy(SDL_Texture *sprite);
+void gfx_sprite_render(gfx_context_t *ctxt, SDL_Texture *sprite, int x, int y, int sprite_width, int sprite_height);
+
 void gfx_present(gfx_context_t *ctxt);
+
 SDL_Keycode gfx_keypressed();
-SDL_Texture *gfx_loadsprite(gfx_context_t *ctxt, char *filename);
-void gfx_rendersprite(gfx_context_t *ctxt, SDL_Texture *sprite, int x, int y, int sprite_width, int sprite_height);
 
 #endif

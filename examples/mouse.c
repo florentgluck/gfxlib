@@ -23,15 +23,15 @@ static void render(gfx_context_t *context) {
 
     // Left button: draw a "cross" at mouse position
     if (button & 1) {
-        gfx_putpixel(context, x,   y, GFX_RGB(200,100,255));
-        gfx_putpixel(context, x-1, y, GFX_RGB(100,50,255));
-        gfx_putpixel(context, x+1, y, GFX_RGB(100,50,255));
-        gfx_putpixel(context, x, y-1, GFX_RGB(100,50,255));
-        gfx_putpixel(context, x, y+1, GFX_RGB(100,50,255));
+        gfx_background_putpixel(context, x,   y, GFX_RGB(200,100,255));
+        gfx_background_putpixel(context, x-1, y, GFX_RGB(100,50,255));
+        gfx_background_putpixel(context, x+1, y, GFX_RGB(100,50,255));
+        gfx_background_putpixel(context, x, y-1, GFX_RGB(100,50,255));
+        gfx_background_putpixel(context, x, y+1, GFX_RGB(100,50,255));
     }
     // Right button: clear screen
     else if (button & 4) {
-        gfx_clear(context, GFX_COL_BLACK);
+        gfx_background_clear(context, GFX_COL_BLACK);
     }
 }
 
@@ -51,7 +51,7 @@ int main() {
 
     while (gfx_keypressed() != SDLK_ESCAPE) {
         render(ctxt);
-        gfx_copy_pixels(ctxt);
+        gfx_background_update(ctxt);
         gfx_present(ctxt);
     }
 

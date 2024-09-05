@@ -8,14 +8,14 @@
 /// Render some white noise.
 /// @param context graphical context to use.
 static void render(gfx_context_t *context) {
-    gfx_clear(context, GFX_COL_BLACK);
+    gfx_background_clear(context, GFX_COL_BLACK);
 
     for (int i = 0; i < DISPLAY_WIDTH*DISPLAY_HEIGHT/10; i++) {
         int x = rand() % context->width;
         int y = rand() % context->height;
         uint32_t intensity = rand() % 256;  // 8-bit per color channel
         pixel_t color = GFX_RGB(intensity,intensity,intensity);
-        gfx_putpixel(context, x, y, color);
+        gfx_background_putpixel(context, x, y, color);
     }
 }
 
@@ -30,7 +30,7 @@ int main() {
 
     while (gfx_keypressed() != SDLK_ESCAPE) {
         render(ctxt);
-        gfx_copy_pixels(ctxt);
+        gfx_background_update(ctxt);
         gfx_present(ctxt);
     }
 

@@ -48,10 +48,10 @@ static void render_plasma(gfx_context_t *context) {
             t2 = j+c2;
             c = sintab[t1 & 255]-sintab[((t2 & 255)+64) & 255]-sintab[((t1 & 255)+64) & 255];
             pixel_t col = palette[(c & 254)+1];
-            gfx_putpixel(context, i*2+1,j*2,col);
-            gfx_putpixel(context, i*2,j*2+1,col);
-            gfx_putpixel(context, i*2,j*2,col);
-            gfx_putpixel(context, i*2+1,j*2+1,col);
+            gfx_background_putpixel(context, i*2+1,j*2,col);
+            gfx_background_putpixel(context, i*2,j*2+1,col);
+            gfx_background_putpixel(context, i*2,j*2,col);
+            gfx_background_putpixel(context, i*2+1,j*2+1,col);
         }
     }
 
@@ -67,8 +67,8 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    SDL_Texture *sprite_tex = gfx_loadsprite(ctxt, "examples/tux_jedi.png");
-    if (!sprite_tex) {
+    SDL_Texture *sprite = gfx_sprite_create(ctxt, "examples/tux_jedi.png");
+    if (!sprite) {
         fprintf(stderr, "Failed loading sprite!\n");
         return EXIT_FAILURE;
     }
@@ -78,8 +78,8 @@ int main() {
 
     while (!quit) {
         render_plasma(ctxt);
-        gfx_copy_pixels(ctxt);
-        gfx_rendersprite(ctxt, sprite_tex, x, y, 128, 128);
+        gfx_background_update(ctxt);
+        gfx_sprite_render(ctxt, sprite, x, y, 128, 128);
         gfx_present(ctxt);
 
         SDL_Keycode key = gfx_keypressed();
@@ -101,6 +101,8 @@ int main() {
                 break;
         }
     }
+
+    gfx_sprite_destroy(sprite);
 
     gfx_destroy(ctxt);
     return EXIT_SUCCESS;
