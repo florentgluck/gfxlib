@@ -37,9 +37,15 @@ gfx_context_t* gfx_create(char *title, int width, int height) {
     SDL_Window *window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_Texture *background_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-    pixel_t *background = malloc(width*height*sizeof(pixel_t));
+
     gfx_context_t *ctxt = malloc(sizeof(gfx_context_t));
 
+    // Retrieve the background texture's pitch
+    uint8_t *unused;
+    SDL_LockTexture(background_texture, NULL, (void **)&unused, &ctxt->pitch);
+    SDL_UnlockTexture(background_texture);
+
+    pixel_t *background = malloc(ctxt->pitch*height);
     if (!window || !renderer || !background_texture || !background || !ctxt) goto error;
 
     ctxt->renderer = renderer;
@@ -64,7 +70,7 @@ error:
 /// @param color pixel color.
 void gfx_background_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color) {
     if (x < ctxt->width && y < ctxt->height) {
-        ctxt->background[ctxt->width*y+x] = color;
+        ctxt->background[ctxt->pitch/sizeof(pixel_t)*y+x] = color;
     }
 }
 
@@ -72,9 +78,10 @@ void gfx_background_putpixel(gfx_context_t *ctxt, int x, int y, pixel_t color) {
 /// @param ctxt graphic context.
 /// @param color fill color.
 void gfx_background_clear(gfx_context_t *ctxt, pixel_t color) {
-    int n = ctxt->width*ctxt->height;
-    while (n) {
-        ctxt->background[--n] = color;
+    for (int j = 0; j < ctxt->height; j++) {
+        for (int i = 0; i < ctxt->width; i++) {
+            ctxt->background[ctxt->pitch/sizeof(pixel_t)*j+i] = color;
+        }
     }
 }
 
@@ -149,7 +156,7 @@ SDL_Texture *gfx_sprite_load(gfx_context_t *ctxt, char *filename) {
 /// @return a pointer to the sprite or NULL in case of failure.
 /// When not needed anymore, deallocate it with gfx_sprite_destroy.
 SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, int height) {
-    SDL_Texture *tex = SDL_CreateTexture(ctxt->renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, width, height);
+    SDL_Texture *tex = SDL_CreateTexture(ctxt->renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
     if (!tex) {
         return NULL;
     }
@@ -157,11 +164,17 @@ SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, 
     // Force renderer to use alpha blending when rendering the sprite.
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
-    int pitch = width*4;  // 4 bytes per pixel
-    if (SDL_UpdateTexture(tex, NULL, pixels, pitch) != 0) {
-        SDL_DestroyTexture(tex);
-        return NULL;
+    pixel_t *dst_pixels;
+    pixel_t *src_pixels = (pixel_t *)pixels;
+    int pitch;
+    SDL_LockTexture(tex, NULL, (void **)&dst_pixels, &pitch);
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
+            dst_pixels[pitch/sizeof(pixel_t)*j+i] = *src_pixels;
+            src_pixels++;
+        }
     }
+    SDL_UnlockTexture(tex);
 
     return tex;
 }

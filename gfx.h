@@ -30,6 +30,7 @@ typedef struct {
     SDL_Renderer *renderer;
     SDL_Texture *background_texture;
     pixel_t *background;
+    int pitch;
     int width;
     int height;
 } gfx_context_t;
