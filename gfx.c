@@ -154,6 +154,7 @@ SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, 
         return NULL;
     }
     
+    // Force renderer to use alpha blending when rendering the sprite.
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
     SDL_Rect rect = { .x = 0, .y = 0, .w = width, .h = height };
@@ -166,13 +167,16 @@ SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, 
     return tex;
 }
 
+/// Destroy a sprite that was loaded/created with gfx_sprite_load/gfx_sprite_create.
+/// @param ctxt graphic context.
+/// @param sprite the sprite (texture) to destroy.
 void gfx_sprite_destroy(SDL_Texture *sprite) {
     SDL_DestroyTexture(sprite);
 }
 
 /// Render a sprite at the specified position.
 /// @param context graphic context.
-/// @param sprite texture holding the sprite data.
+/// @param sprite the sprite (texture) to render.
 /// @param x sprite's x coordinate.
 /// @param y sprite's y coordinate.
 /// @param sprite_width sprite's display width in pixels.
