@@ -167,7 +167,10 @@ SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, 
     pixel_t *dst_pixels;
     pixel_t *src_pixels = (pixel_t *)pixels;
     int pitch;
-    SDL_LockTexture(tex, NULL, (void **)&dst_pixels, &pitch);
+    if (SDL_LockTexture(tex, NULL, (void **)&dst_pixels, &pitch) != 0) {
+        SDL_DestroyTexture(tex);
+        return NULL;
+    }
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
             dst_pixels[pitch/sizeof(pixel_t)*j+i] = *src_pixels;
