@@ -75,9 +75,7 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    // extern uint8_t tux_cow[65536];
     SDL_Texture *sprite2 = gfx_sprite_create(ctxt, tux_cow, 128, 128);
-    // SDL_Texture *sprite2 = gfx_sprite_create(ctxt, sprite_test, 128, 128);
     if (!sprite2) {
         fprintf(stderr, "Failed creating sprite!\n");
         return EXIT_FAILURE;
