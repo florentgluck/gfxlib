@@ -157,9 +157,8 @@ SDL_Texture *gfx_sprite_create(gfx_context_t *ctxt, uint8_t *pixels, int width, 
     // Force renderer to use alpha blending when rendering the sprite.
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
-    SDL_Rect rect = { .x = 0, .y = 0, .w = width, .h = height };
     int pitch = width*4;  // 4 bytes per pixel
-    if (SDL_UpdateTexture(tex, &rect, pixels, pitch) != 0) {
+    if (SDL_UpdateTexture(tex, NULL, pixels, pitch) != 0) {
         SDL_DestroyTexture(tex);
         return NULL;
     }
